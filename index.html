@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finder Sted — Archive</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --text: #1a1a1a;
+      --muted: #888;
+      --accent: #2a4a7a;
+      --border: #ddd;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      padding: 3rem 2rem 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+    nav {
+      padding: 1rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    nav a:hover { text-decoration: underline; }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .gallery img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      background: #eee;
+      transition: opacity 0.2s;
+    }
+    .gallery img:hover {
+      opacity: 0.85;
+    }
+    .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 280px;
+      background: #e8e4dd;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    @media (max-width: 600px) {
+      .gallery {
+        grid-template-columns: 1fr 1fr;
+      }
+      .gallery img, .placeholder {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Finder Sted</h1>
+    <p>Archive — Kgl. Akademi, Institut for Bygningskunst og Kultur</p>
+  </header>
+  <nav>
+    <a href="index.html">Archive</a>
+    <a href="about.html">About</a>
+  </nav>
+  <div class="gallery" id="gallery">
+    <!-- Images loaded from image server -->
+  </div>
+  <footer>
+    Finder Sted — Kgl. Akademi, Arkitektur
+  </footer>
+  <script>
+    // Load images from the local image server
+    const IMAGE_BASE = window.location.hostname === 'findersted.dk' || window.location.hostname === 'localhost'
+      ? '/images'
+      : 'https://100.113.1.13:8443/findersted';
+
+    fetch(IMAGE_BASE + '/index.json')
+      .then(r => r.json())
+      .then(images => {
+        const gallery = document.getElementById('gallery');
+        images.forEach(img => {
+          const a = document.createElement('a');
+          a.href = IMAGE_BASE + '/' + img.file;
+          a.target = '_blank';
+          const el = document.createElement('img');
+          el.loading = 'lazy';
+          el.src = IMAGE_BASE + '/thumb/' + img.file;
+          el.alt = img.title || img.file;
+          a.appendChild(el);
+          gallery.appendChild(a);
+        });
+      })
+      .catch(() => {
+        // Fallback: show placeholder
+        document.getElementById('gallery').innerHTML = '<div class="placeholder">Images loading from local server…</div>';
+      });
+  </script>
+</body>
+</html>
